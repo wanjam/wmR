@@ -154,3 +154,69 @@ fast_downsample <- function(pddt, by, Hz = 100, useref = FALSE,
   pddt.tmp[, DS := NULL]
   return(pddt.tmp)
 }
+
+
+##' @title fast_median_resampler
+##' @description Fast downsampling of simple time-series data.
+##' However, it's *much faster*.
+##' Downsampling is done via computing bin-wise medians.
+##' This is a very simple solution. Check if this is appropriate for you data.
+##' See wmR::fast_downsample for an Eyelink-Eyetracking specific version.
+##'
+##' This simple version assumes that your input data table is in long format and
+##' has only two columns: Time and whatever your value is (e.g., Time and
+##' Dilation).
+##'
+##' @param dat a \code{data.table} in long format, containing only two columns:
+##' \itemize{
+##' \item{<dscols>} data column specified by `dscols`
+##' \item{Time} time stamp in ms (!) associated with each sample
+##' }
+##' @param dscols a string with the column name of the to-be-resampled data
+##'
+##' @param Hz target Hz; ideally source Hz should be a multiple of target Hz
+##' @param useref boolean (default: FALSE). Defines whether internally a
+##' \code{copy()} of data.table is used, or the original data.table by reference.
+##' Can be set TRUE to squeeze the last bit of performance out of it.
+##' Only do so if you're absolutely sure you don't mind your original pddt-data.table to be messed with.
+##'
+##' @return Returns a downsampled copy of the original \code{data.table} with the following columns:
+##' @examples
+##' \dontrun{
+##' foo <- data.table(Dil=1:0.5:500, Time=1:1000)
+##' bar <- fast_median_resampler(foo, Hz = 100, dscols = 'Dil')
+##' }
+##' @author (2021) Wanja Mössing
+##' @name fast_median_resampler
+##' @export fast_median_resampler
+##' @import data.table
+##' @importFrom stats median
+##' @seealso wmr::fast_downsample
+
+fast_median_resampler <- function (dat, Hz = 100, useref = FALSE, dscols='Dil')
+{
+  # option to avoid doing things by reference to the original data.table
+  if (!useref) {
+    dat.tmp <- data.table::copy(dat)
+  }
+  else {
+    dat.tmp <- dat
+  }
+
+  # get inter sample interval
+  sampleTime <- dat.tmp[, Time[2] - Time[1]] # in ms: how long does 1 sample take?
+  binSize <- 1000/Hz # in ms: how long will a sample take after resampling?
+  if (binSize%%sampleTime != 0) {
+    warning("Sample frequency of data is not a multiple of the target frequency specified in the by argument")
+  }
+
+  # create "DS", the new Time column after downsampling
+  dat.tmp[, DS:=Time%/%binSize]
+
+  # improve radix sorting
+  setorder(dat.tmp, DS, Time)
+  dat.tmp <- dat.tmp[, lapply(.SD, median), by = DS, .SDcols = dscols]
+  dat.tmp[, `:=`(Time, DS * binSize)]
+  dat.tmp[, `:=`(DS, NULL)]
+  return(dat.tmp)
+}

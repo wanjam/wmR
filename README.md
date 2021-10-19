@@ -5,5 +5,5 @@ This R packages contains my personal collection of functions. Feel free to reuse
 install via:
 
 ```R
-remotes::install_github('wanjam/wmR')
+remotes::install_github('wanjam/wmR/wmR')
 ```
