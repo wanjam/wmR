@@ -50,7 +50,7 @@ computername <- function(){
 ##' @param append append this string to the result. silently ignored, if the
 ##' result isn't a string
 ##' @examples
-##' \donttest{
+##' \dontrun{
 ##' rootdir <- pcswitch(c('LinuxServer', 'WinLaptop', 'WinStation'),
 ##'                       append = 'User',
 ##'                       '/', 'C:/', 'F:/')
@@ -170,12 +170,13 @@ libraries <- function(...){
 ##' @return Nothing.
 ##' @seealso \code{options(error)}
 ##' @examples
+##' \dontrun{
 ##' library(wmR)
 ##' pause_on_error(TRUE)
 ##' \donttest{sum('THREEPLUSFOUR')}
 ##' pause_on_error(FALSE)
 ##' \donttest{sum('THREEPLUSFOUR')}
-##'
+##' }
 ##' @author Wanja Mössing
 ##' @name pause_on_error
 ##' @export pause_on_error

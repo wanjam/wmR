@@ -1,7 +1,7 @@
 Package: wmR
 Type: Package
 Title: Collection of functions I (Wanja Moessing) frequently use
-Version: 1.0.9
+Version: 1.0.10
 Author: Wanja Moessing
 Maintainer: Wanja Moessing <w.a.moessing@gmail.com>
 URL: https://go.wwu.de/buschlab
@@ -26,7 +26,8 @@ Imports:
     stringr (>= 1.4.0),
     afex (>= 0.25.1),
     BayesFactor (>= 0.9.12.4.2),
-    collapse (>= 1.1.0)
+    collapse (>= 1.1.0),
+    lubridate (>= 1.8.0)
 Remotes: 
     github::hedderik/pR,
     github::hedderik/hvR,

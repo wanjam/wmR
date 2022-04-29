@@ -77,6 +77,7 @@ larger mean than the other group.
 }
 \examples{
 # create fake data
+\dontrun{
 libraries(data.table, ggplot2)
 data = data.table()
 for (id in 1:10){
@@ -95,7 +96,7 @@ ggplot(data[, .(mV = mean(mV)), by = .(ID, Time, condition)],
 
 # run test
 foo = TimeSeriesClusterBasedPermutationTest(data, nperm = 100)
-
+}
 }
 \seealso{
 t.test TimeSeriesPermutationTest

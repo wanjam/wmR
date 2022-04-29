@@ -53,6 +53,7 @@
 ##' larger mean than the other group.
 ##' @examples
 ##' # create fake data
+##' \dontrun{
 ##' libraries(data.table, ggplot2)
 ##' data = data.table()
 ##' for (id in 1:10){
@@ -71,6 +72,7 @@
 ##'
 ##' # run test
 ##' foo = TimeSeriesPermutationTest(data, nperm = 100)
+##' }
 ##'
 ##' @author Wanja Mössing
 ##' @name TimeSeriesPermutationTest
@@ -255,6 +257,7 @@ TimeSeriesPermutationTest <- function(data, condCol='condition', dataCol='mV',
 ##' larger mean than the other group.
 ##' @examples
 ##' # create fake data
+##' \dontrun{
 ##' libraries(data.table, ggplot2)
 ##' data = data.table()
 ##' for (id in 1:10){
@@ -273,7 +276,7 @@ TimeSeriesPermutationTest <- function(data, condCol='condition', dataCol='mV',
 ##'
 ##' # run test
 ##' foo = TimeSeriesClusterBasedPermutationTest(data, nperm = 100)
-##'
+##' }
 ##' @author Wanja Mössing
 ##' @name TimeSeriesClusterBasedPermutationTest
 ##' @export TimeSeriesClusterBasedPermutationTest

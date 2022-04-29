@@ -23,7 +23,7 @@ Returns the result of whatever it is supposed to evaluate
 Does something specific to the host it's running on.
 }
 \examples{
-\donttest{
+\dontrun{
 rootdir <- pcswitch(c('LinuxServer', 'WinLaptop', 'WinStation'),
                       append = 'User',
                       '/', 'C:/', 'F:/')

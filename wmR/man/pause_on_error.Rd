@@ -19,12 +19,13 @@ catastrophical errors. If used without input, it will work like a switch,
 changing whatever the current state is to the opposite.
 }
 \examples{
+\dontrun{
 library(wmR)
 pause_on_error(TRUE)
 \donttest{sum('THREEPLUSFOUR')}
 pause_on_error(FALSE)
 \donttest{sum('THREEPLUSFOUR')}
-
+}
 }
 \seealso{
 \code{options(error)}
