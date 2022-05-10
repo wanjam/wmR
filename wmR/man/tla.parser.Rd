@@ -2,8 +2,8 @@
 % Please edit documentation in R/wmR.plaparser.R
 \name{tla.parser}
 \alias{tla.parser}
-\title{Load the output logfile Nils Lüschow's Android Time Logger App and parses it
-to data science friendly long-table format.}
+\title{Load the output logfile that Nils Lüschow's Android Time Logger App produces,
+and parses it to data science friendly long-table format.}
 \usage{
 tla.parser(
   rawpath,
@@ -25,7 +25,9 @@ tla.parser(
 a single data.table in long format with information of all files.
 }
 \description{
-Note: This function was designed to work with V1.1.1 of the app. Since the app's output might change at any time, the function may stop working with higher versions.
+Note: This function was designed to work with V1.1.1 of the app. Since the
+      app's output might change at any time, the function may stop working
+      with higher versions.
 }
 \details{
 check https://github.com/IXP-Team/exptool_Time-Logger/ to get a release apk.

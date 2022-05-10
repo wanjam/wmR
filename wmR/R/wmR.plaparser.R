@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' Load the output logfile Nils Lüschow's Android Time Logger App and parses it
-#' to data science friendly long-table format.
+#' Load the output logfile that Nils Lüschow's Android Time Logger App produces,
+#' and parses it to data science friendly long-table format.
 #'
-#' Note: This function was designed to work with V1.1.1 of the app. Since the app's output might change at any time, the function may stop working with higher versions.
+#' Note: This function was designed to work with V1.1.1 of the app. Since the
+#'       app's output might change at any time, the function may stop working
+#'       with higher versions.
 #'
 #' check https://github.com/IXP-Team/exptool_Time-Logger/ to get a release apk.
 #'
@@ -31,7 +33,6 @@
 #' @return a single data.table in long format with information of all files.
 #'
 #' @examples
-
 #'
 #' \dontrun{
 #' DT = tla.parser("raw/", "^f")
@@ -64,12 +65,13 @@ tla.parser <- function(rawpath,
 
   # parse all files and rbind
   print("Now parsing...")
-  outdat = rbindlist(lapply(fnames, .tla.parser.singlefile, SR=Hz))
+  outdat = rbindlist(lapply(fnames, .tla.parser.singlefile, SR=Hz), fill = T)
 
   # store if desired
   if (!is.na(outpath)){
     fwrite(outdat, outpath)
   }
+
 
   # return
   return(outdat)
@@ -116,7 +118,7 @@ tla.parser <- function(rawpath,
               entry, "(?<=[^(nt)]\\s{1}\\-\\s{1}).*$"),
             marker_code = str_extract(
               entry,"(?<=nt\\s{1}\\-\\s{1}).*(?=\\s{1}\\-\\s{1})"))
-          ]
+  ]
 
   # warn if "-" have been used
   if (any(one.log[, str_detect(marker_name, "\\s{1}\\-\\s{1}")], na.rm=T) ||
@@ -140,6 +142,8 @@ tla.parser <- function(rawpath,
 
   # now create a running count of events
   one.log[,Running_Event_Count := 1:.N, by = .(type, marker_code)]
+
+
 
   # based on this, create a time-series long format table
   ## check how many milliseconds the session lasted and create a table that long
@@ -174,7 +178,7 @@ tla.parser <- function(rawpath,
   # create merger index for closest match using rolling join
   one.log = cbind(one.log,
                   one.log.ts[one.log, .(Rel_time_ms),on = .(CET_timestamp),
-                    mult="first", roll="nearest"])
+                             mult="first", roll="nearest"])
 
   # merge
   one.log.ts <- merge(one.log.ts, one.log, by="Rel_time_ms", all.x = T)
@@ -183,6 +187,24 @@ tla.parser <- function(rawpath,
   one.log.ts[, CET_timestamp.y:=NULL]
   setnames(one.log.ts, "CET_timestamp.x", "CET_timestamp")
 
+  # create one column per marker code and set to true and false depending on whether card is active
+  mkrnames = one.log.ts[!(is.na(Marker_Name)), unique(Marker_Name)]
+
+  # mkrnames = str_replace_all(mkrnames, "\\s", "_")
+  one.log.ts[, (mkrnames) := NA,]
+  timestamps.mkr = one.log.ts[, .(min = min(CET_timestamp, na.rm = T),
+                               max = max(CET_timestamp, na.rm = T)),
+                           by = .(Marker_Name, Running_Event_Count)]
+  for (imkr in mkrnames) {
+    one.log.ts[, (imkr) := FALSE]
+    for (icntr in timestamps.mkr[Marker_Name == imkr,
+                                 unique(Running_Event_Count)]){
+      one.log.ts[CET_timestamp %between% timestamps.mkr[
+        Marker_Name == imkr & Running_Event_Count == icntr, c(min, max)],
+                 (imkr) := TRUE]
+    }
+  }
 
   return(one.log.ts)
 }
+
