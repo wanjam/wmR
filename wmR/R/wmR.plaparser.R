@@ -135,25 +135,30 @@ tla.parser <- function(rawpath,
 
 
   # remove "entry" & "value" columns
-  one.log[, entry:=NULL][, value:=NULL]
+  one.log[, entry := NULL][, value := NULL]
 
   # convert time column to POSIXct
   one.log[, timestamp := as.POSIXct(timestamp, format="%Y-%m-%dT%H:%M:%OS")]
 
   # now create a running count of events
-  one.log[,Running_Event_Count := 1:.N, by = .(type, marker_code)]
+  one.log[, Running_Event_Count := 1:.N, by = .(type, marker_code)]
 
 
 
   # based on this, create a time-series long format table
   ## check how many milliseconds the session lasted and create a table that long
   ms_tot = as.numeric(
-    difftime(one.log[marker_name=="stop recording", timestamp],
-             one.log[marker_name=="start recording", timestamp],
+    difftime(one.log[marker_name == "stop recording", timestamp],
+             one.log[marker_name == "start recording", timestamp],
              units = "secs")) * 1000
   freq = 1000/SR
-  one.log.ts = data.table(ID = NA, Instructor = NA, Age = NA, Sex = NA,
-                          Filename = fname,
+  one.log.ts = data.table(ID = NA,
+                          Instructor = NA,
+                          Age = NaN,
+                          Sex = NA,
+                          Height_cm = NaN,
+                          Weight_kg = NaN,
+                          Filename = str_extract(fname, "(?<=/)[^/]*$"),
                           Rel_time_ms = seq(0, ms_tot, freq),
                           CET_timestamp = as.POSIXct(NA))
 
