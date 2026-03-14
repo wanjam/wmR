@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Wanja Mössing
+# Copyright (C) 2026 Wanja Mössing
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,13 +13,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#' wmR: A collection of functions I (Wanja Mössing) frequently use.
+#' wmR: A collection of functions I (Wanja Mössing) frequently use
 #'
 #' Only use this if you know what you're doing!
 #'
 #' @section Ported functions:
-#' This package contains some ported matlab functions...
+#' This package contains some ported MATLAB functions.
 #'
-#' @docType package
-#' @name wmR
-NULL
+#' @keywords internal
+"_PACKAGE"
