@@ -2,7 +2,7 @@
 % Please edit documentation in R/wmR.soccerplots.R
 \name{soccer_radar_plot}
 \alias{soccer_radar_plot}
-\title{Create soccer analytics radar charts}
+\title{Create soccer analytics radar charts with numeric values at polygon edges}
 \usage{
 soccer_radar_plot(
   data,
