@@ -11,6 +11,7 @@
 #' @param colorPalette palette specification ("wesanderson" or color vector)
 #' @param Normexplain logical, add normalization caption
 #' @param grid logical, arrange multiple plots in grid
+#' @param weights optional numeric vector controlling label fontsize
 #'
 #' @return ggplot object or list/grid of ggplots
 #' @export
@@ -22,7 +23,8 @@ soccer_radar_plot <- function(
     ShowAverage = NA,
     colorPalette = "wesanderson",
     Normexplain = TRUE,
-    grid = TRUE
+    grid = TRUE,
+    weights = NULL
 ) {
 
   requireNamespace("data.table")
@@ -39,7 +41,16 @@ soccer_radar_plot <- function(
     stop("Some measurecols are missing from data.")
   }
 
-  # Filter players
+  if (is.null(weights)) {
+    weights <- rep(1, length(measurecols))
+  }
+
+  if (length(weights) != length(measurecols)) {
+    stop("weights must have same length as measurecols")
+  }
+
+  names(weights) <- measurecols
+
   if (!is.null(Players)) {
     dt <- dt[get(IDcol) %in% c(Players, ShowAverage)]
   }
@@ -48,17 +59,17 @@ soccer_radar_plot <- function(
     stop("No players remaining after filtering.")
   }
 
-  # Scale to 0–1
+  dt_original <- data.table::copy(dt)
+
   dt_scaled <- data.table::copy(dt)
 
   dt_scaled[, (measurecols) := lapply(.SD, function(x) x / 100),
             .SDcols = measurecols]
 
-  # Extract average row if requested
   avg_row <- NULL
 
   if (!is.na(ShowAverage)) {
-    #browser()
+
     avg_row <- dt_scaled[get(IDcol) == ShowAverage]
 
     if (nrow(avg_row) == 0) {
@@ -66,20 +77,17 @@ soccer_radar_plot <- function(
     }
   }
 
-  # Player rows (exclude average)
   player_rows <- dt_scaled
 
   if (!is.na(ShowAverage)) {
     player_rows <- dt_scaled[get(IDcol) != ShowAverage]
   }
 
-  # Caption
   caption_text <- NULL
   if (Normexplain) {
     caption_text <- "Metrics normalized to percentile scale (0–100)."
   }
 
-  # Color generator
   make_colors <- function(n) {
 
     if (identical(colorPalette, "wesanderson")) {
@@ -100,7 +108,6 @@ soccer_radar_plot <- function(
     }
   }
 
-  # Plot builder
   build_radar <- function(player_df) {
 
     plot_data <- player_df
@@ -132,8 +139,31 @@ soccer_radar_plot <- function(
         panel.background = ggplot2::element_rect(fill = "transparent"),
         text = ggplot2::element_text(family = "sans", color = "#424242",size = 11),
         legend.position = "bottom",
-        plot.margin = ggplot2::margin(1, 1, 1, 1)  # top, right, bottom, left
+        plot.margin = ggplot2::margin(1, 1, 1, 1)
       )
+
+    player_id <- player_df[[IDcol]]
+
+    vals <- round(as.numeric(dt_original[get(IDcol) == player_id, ..measurecols]),0)
+
+    angles <- seq(0, 2*pi, length.out = length(measurecols) + 1)[-(length(measurecols)+1)]
+
+    label_radius <- 1.08
+
+    label_df <- data.frame(
+      x = label_radius * sin(angles),
+      y = label_radius * cos(angles),
+      label = vals,
+      size = weights
+    )
+
+    p <- p +
+      ggplot2::geom_text(
+        data = label_df,
+        ggplot2::aes(x = x, y = y, label = label, size = size),
+        inherit.aes = FALSE
+      ) +
+      ggplot2::scale_size_identity()
 
     if (!is.null(caption_text)) {
       p <- p + ggplot2::labs(caption = caption_text)
@@ -142,12 +172,10 @@ soccer_radar_plot <- function(
     p
   }
 
-  # Single player case
   if (nrow(player_rows) == 1) {
     return(build_radar(player_rows))
   }
 
-  # Multiple players
   plots <- lapply(seq_len(nrow(player_rows)), function(i) {
 
     player_df <- player_rows[i]

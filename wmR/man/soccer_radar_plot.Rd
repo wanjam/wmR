@@ -12,7 +12,8 @@ soccer_radar_plot(
   ShowAverage = NA,
   colorPalette = "wesanderson",
   Normexplain = TRUE,
-  grid = TRUE
+  grid = TRUE,
+  weights = NULL
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ soccer_radar_plot(
 \item{Normexplain}{logical, add normalization caption}
 
 \item{grid}{logical, arrange multiple plots in grid}
+
+\item{weights}{optional numeric vector controlling label fontsize}
 }
 \value{
 ggplot object or list/grid of ggplots
