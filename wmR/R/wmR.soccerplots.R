@@ -11,7 +11,8 @@
 #' @param colorPalette palette specification ("wesanderson" or color vector)
 #' @param Normexplain logical, add normalization caption
 #' @param grid logical, arrange multiple plots in grid
-#' @param weights optional numeric vector controlling label fontsize
+#' @param fontsize intger, font size in pts
+#' @param weights optional numeric vector controlling label fontsize (default: 11)
 #'
 #' @return ggplot object or list/grid of ggplots
 #' @export
@@ -24,6 +25,7 @@ soccer_radar_plot <- function(
     colorPalette = "wesanderson",
     Normexplain = TRUE,
     grid = TRUE,
+    fontsize = 11,
     weights = NULL
 ) {
 
@@ -83,6 +85,11 @@ soccer_radar_plot <- function(
     p <- ggradar::ggradar(
       plot_data[, c("group", measurecols), with = FALSE],
       fill = TRUE,
+      base.size = fontsize,
+      axis.label.size = fontsize/3,
+      grid.label.size = fontsize/3,
+      legend.text.size = fontsize,
+      #legend.title.size = fontsize,
       fill.alpha = 0.35,
       group.line.width = 1.5,
       group.point.size = 3,
@@ -92,12 +99,13 @@ soccer_radar_plot <- function(
       background.circle.colour = "#FAFAFA",
       group.colours = colors
     ) +
+      ggplot2::coord_equal(clip = "off") +
       ggplot2::theme(
         plot.background = ggplot2::element_rect(fill = "transparent", color = NA),
         panel.background = ggplot2::element_rect(fill = "transparent"),
-        text = ggplot2::element_text(family = "sans", color = "#424242", size = 11),
+        text = ggplot2::element_text(family = "sans", color = "#424242", size = fontsize),
         legend.position = "bottom",
-        plot.margin = ggplot2::margin(1, 1, 1, 1)
+        plot.margin = ggplot2::margin(40, 60, 40, 60)
       )
 
     # Add numeric labels only for non-average players
@@ -121,7 +129,7 @@ soccer_radar_plot <- function(
         data = label_df,
         ggplot2::aes(x = x, y = y, label = label),
         inherit.aes = FALSE,
-        size = 3
+        size = fontsize/3
       )
     }
 

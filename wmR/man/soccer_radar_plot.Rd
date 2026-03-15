@@ -13,6 +13,7 @@ soccer_radar_plot(
   colorPalette = "wesanderson",
   Normexplain = TRUE,
   grid = TRUE,
+  fontsize = 11,
   weights = NULL
 )
 }
@@ -33,7 +34,9 @@ soccer_radar_plot(
 
 \item{grid}{logical, arrange multiple plots in grid}
 
-\item{weights}{optional numeric vector controlling label fontsize}
+\item{fontsize}{intger, font size in pts}
+
+\item{weights}{optional numeric vector controlling label fontsize (default: 11)}
 }
 \value{
 ggplot object or list/grid of ggplots
